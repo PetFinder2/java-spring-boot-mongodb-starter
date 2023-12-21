@@ -1,32 +1,32 @@
-package com.mongodb.starter;
-
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
+package com.mongodb.starter;// MongoDBConfiguration.java
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.bson.codecs.pojo.PojoCodecProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
-import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
+import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-public class MongoDBConfiguration {
+@EnableMongoRepositories(basePackages = "com.mongodb.starter.repositories")
+public class MongoDBConfiguration extends AbstractMongoClientConfiguration {
 
     @Value("${spring.data.mongodb.uri}")
     private String connectionString;
 
     @Bean
     public MongoClient mongoClient() {
-        CodecRegistry pojoCodecRegistry = fromProviders(PojoCodecProvider.builder().automatic(true).build());
-        CodecRegistry codecRegistry = fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), pojoCodecRegistry);
-        return MongoClients.create(MongoClientSettings.builder()
-                                                      .applyConnectionString(new ConnectionString(connectionString))
-                                                      .codecRegistry(codecRegistry)
-                                                      .build());
+        return MongoClients.create(connectionString);
     }
 
+    @Bean
+    public MongoTemplate mongoTemplate() {
+        return new MongoTemplate(mongoClient(), getDatabaseName());
+    }
+
+    @Override
+    protected String getDatabaseName() {
+        return "Kompesation";
+    }
 }
