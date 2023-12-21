@@ -1,5 +1,6 @@
-package com.mongodb.starter.models;
+package com.mongodb.starter.models.mongo;
 
+import com.mongodb.starter.models.mongo.Schueler;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;

@@ -1,22 +1,23 @@
-package com.mongodb.starter.controllers;
+// SQLKlasseController.java
 
-import com.mongodb.starter.models.Klasse;
-import com.mongodb.starter.models.Maturafach;
-import com.mongodb.starter.models.Schueler;
-import com.mongodb.starter.services.KlasseService;
+package com.mongodb.starter.controllers.sql;
+
+import com.mongodb.starter.models.sql.SQLKlasse;
+import com.mongodb.starter.models.sql.SQLMaturafach;
+import com.mongodb.starter.models.sql.SQLSchueler;
+import com.mongodb.starter.services.sql.SQLKlasseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.mongodb.starter.services.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/klassen")
-public class KlasseController {
-    private final KlasseService klasseService;
+@RequestMapping("/api/sql/klassen")
+public class SQLKlasseController {
+    private final SQLKlasseService klasseService;
 
     @Autowired
-    public KlasseController(KlasseService klasseService) {
+    public SQLKlasseController(SQLKlasseService klasseService) {
         this.klasseService = klasseService;
     }
 
@@ -26,7 +27,7 @@ public class KlasseController {
     }
 
     @PostMapping("/{className}/schueler")
-    public void fuegeSchuelerHinzu(@PathVariable String className, @RequestBody Schueler schueler) {
+    public void fuegeSchuelerHinzu(@PathVariable String className, @RequestBody SQLSchueler schueler) {
         klasseService.fuegeSchuelerHinzu(className, schueler);
     }
 
@@ -34,13 +35,13 @@ public class KlasseController {
     public void fuegeMaturafachHinzu(
             @PathVariable String className,
             @PathVariable String studentName,
-            @RequestBody Maturafach maturafach
+            @RequestBody SQLMaturafach maturafach
     ) {
         klasseService.fuegeMaturafachHinzu(className, studentName, maturafach);
     }
 
     @GetMapping
-    public List<Klasse> getAlleKlassen() {
+    public List<SQLKlasse> getAlleKlassen() {
         return klasseService.getAlleKlassen();
     }
 }

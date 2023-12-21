@@ -1,6 +1,6 @@
-package com.mongodb.starter.repositories;
+package com.mongodb.starter.repositories.mongo;
 
-import com.mongodb.starter.models.Klasse;
+import com.mongodb.starter.models.mongo.Klasse;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 

@@ -1,9 +1,9 @@
-package com.mongodb.starter.services;
+package com.mongodb.starter.services.mongo;
 
-import com.mongodb.starter.models.Klasse;
-import com.mongodb.starter.models.Maturafach;
-import com.mongodb.starter.models.Schueler;
-import com.mongodb.starter.repositories.KlasseRepository;
+import com.mongodb.starter.models.mongo.Klasse;
+import com.mongodb.starter.models.mongo.Maturafach;
+import com.mongodb.starter.models.mongo.Schueler;
+import com.mongodb.starter.repositories.mongo.KlasseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

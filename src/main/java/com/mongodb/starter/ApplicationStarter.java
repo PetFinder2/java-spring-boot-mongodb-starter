@@ -1,9 +1,9 @@
 package com.mongodb.starter;
 
-import com.mongodb.starter.models.Klasse;
-import com.mongodb.starter.models.Maturafach;
-import com.mongodb.starter.models.Schueler;
-import com.mongodb.starter.services.KlasseService;
+import com.mongodb.starter.models.mongo.Klasse;
+import com.mongodb.starter.models.mongo.Maturafach;
+import com.mongodb.starter.models.mongo.Schueler;
+import com.mongodb.starter.services.mongo.KlasseService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
