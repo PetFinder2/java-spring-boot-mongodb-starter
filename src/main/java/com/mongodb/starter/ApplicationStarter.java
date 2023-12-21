@@ -7,11 +7,13 @@ import com.mongodb.starter.services.KlasseService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
 @SpringBootApplication
+@EntityScan(basePackages = {"com.mongodb.starter.models", "com.mongodb.starter.models"})
 public class ApplicationStarter {
 
     public static void main(String[] args) {
@@ -22,7 +24,7 @@ public class ApplicationStarter {
     public CommandLineRunner dataLoader(KlasseService klasseService) {
         return args -> {
 
-            String className = "5AHIF";
+            String className = "4DHIF";
             String schuelerName = "Stjepan Jaksic";
 
             Klasse klasse = new Klasse(className);
