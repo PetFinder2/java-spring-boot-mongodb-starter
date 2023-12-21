@@ -11,7 +11,7 @@ public class Klasse {
     @Id
     private String id;
     @Indexed(unique = true)
-    private String className; // Änderung: name in className umbenannt
+    private String className;
     private List<Schueler> schueler;
 
     public Klasse(String className) {

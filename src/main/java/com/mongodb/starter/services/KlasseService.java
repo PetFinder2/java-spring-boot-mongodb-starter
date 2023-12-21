@@ -56,9 +56,18 @@ public class KlasseService {
         return klasseRepository.findAll();
     }
 
-    private Optional<Schueler> findSchuelerInKlasse(Klasse klasse, String studentName) {
+    public Optional<Schueler> findSchuelerInKlasse(Klasse klasse, String studentName) {
         return klasse.getSchueler().stream()
                 .filter(schueler -> schueler.getName().equals(studentName))
                 .findFirst();
+    }
+
+    public void entferneKlasse(String className) {
+        klasseRepository.deleteByClassName(className);
+
+    }
+
+    public void entferneAlleKlassen() {
+        klasseRepository.deleteAll();
     }
 }

@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.repository.Query;
 import java.util.Optional;
 
 public interface KlasseRepository extends MongoRepository<Klasse, String> {
-    @Query("{ 'className': ?0 }")  // Änderung: Anpassung des Feldnamens in der Abfrage
+    @Query("{ 'className': ?0 }")
     Optional<Klasse> findByClassName(String className);
+
+    void deleteByClassName(String className);
 }
