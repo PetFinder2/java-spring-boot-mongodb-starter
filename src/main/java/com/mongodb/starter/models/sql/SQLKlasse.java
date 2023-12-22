@@ -21,6 +21,7 @@ public class SQLKlasse {
     @Column(unique = true)
     private String className;
 
+
     @OneToMany(mappedBy = "klasse", cascade = CascadeType.ALL)
     private List<SQLSchueler> schueler;
 
@@ -55,10 +56,6 @@ public class SQLKlasse {
 
     public List<SQLSchueler> getSchueler() {
         return schueler;
-    }
-
-    public void setSchueler(List<SQLSchueler> schueler) {
-        this.schueler = schueler;
     }
 
 }

@@ -11,6 +11,7 @@ import java.util.List;
 public class Klasse {
     @Id
     private String id;
+
     @Indexed(unique = true)
     private String className;
     private List<Schueler> schueler;

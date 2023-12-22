@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBI Projekt</title>
+    <!-- Link zu Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #282c34; /* Dunkles Grau als Hintergrundfarbe */
+            color: #61dafb; /* Helle Blaue Textfarbe */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #39424e; /* Dunkles Blaugrau für die Container */
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            color: #61dafb; /* Helle Blaue Textfarbe für die Überschrift */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .btn-primary {
+            background-color: #61dafb; /* Helle Blaue Hintergrundfarbe für den Primärbutton */
+            border-color: #61dafb; /* Helle Blaue Rahmenfarbe für den Primärbutton */
+        }
+
+        .btn-primary:hover {
+            background-color: #45a5f5; /* Dunklere Blaue Hintergrundfarbe beim Hover-Effekt */
+            border-color: #45a5f5; /* Dunklere Blaue Rahmenfarbe beim Hover-Effekt */
+        }
+
+        .form-control {
+            background-color: #39424e; /* Dunkles Blaugrau für die Formularfelder */
+            color: #61dafb; /* Helle Blaue Textfarbe für die Formularfelder */
+        }
+
+        .table {
+            background-color: #39424e; /* Dunkles Blaugrau für die Tabelle */
+            color: #61dafb; /* Helle Blaue Textfarbe für die Tabelle */
+        }
+
+        .thead-dark th {
+            background-color: #212529; /* Dunkles Grau für den Tabellenkopf */
+            color: #61dafb; /* Helle Blaue Textfarbe für den Tabellenkopf */
+        }
+
+        .loading {
+            display: none; /* Das Loading-GIF standardmäßig ausblenden */
+        }
+
+        /* Neue Stile für die linke Hälfte (SQL) und rechte Hälfte (MongoDB) */
+        #sql-container, #mongodb-container {
+            width: 45%; /* 45% Breite für beide Container */
+        }
+
+        #sql-output, #mongodb-output {
+            margin-top: 20px;
+        }
+
+        /* Pagination-Stile */
+        .pagination {
+            justify-content: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div id="sql-container">
+        <h1>DBI Projekt</h1>
+        <h2>Benchmark</h2>
+        <form id="seederForm" class="mb-3">
+            <div class="form-group">
+                <label>Befülle Klassen, Schüler, Maturafächer und ihre Noten:</label>
+                <br>
+                <label for="numberOfRecords">Wieviele Datensätze?</label>
+                <input type="number" class="form-control" id="numberOfRecords" name="numberOfRecords" required>
+            </div>
+        <button type="button" class="btn btn-primary" onclick="seedData('sql')">Seed SQL!</button>
+<!--            <button type="button" class="btn btn-primary" onclick="createClass()">Create Class</button>-->
+<!--            <button type="button" class="btn btn-primary" onclick="addStudent()">Add Student</button>-->
+<!--            <button type="button" class="btn btn-primary" onclick="addMaturafach()">Add Maturafach</button>-->
+<!--            <button type="button" class="btn btn-primary" onclick="findStudent()">Find Student</button>-->
+<!--            <button type="button" class="btn btn-primary" onclick="getAllClasses()">Get All Classes</button>-->
+<!--            <button type="button" class="btn btn-primary" onclick="deleteClass()">Delete Class</button>-->
+<!--            <button type="button" class="btn btn-primary" onclick="deleteAllClasses()">Delete All Classes</button>-->
+        </form>
+        <div id="sql-output"></div>
+        <nav aria-label="Page navigation" id="sql-pagination"></nav>
+    </div>
+    <div id="mongodb-container">
+        <h2>MongoDB Ausgabe</h2>
+        <button type="button" class="btn btn-primary" onclick="seedData('mongodb')">Seed MongoDB!</button>
+        <div id="mongodb-output"></div>
+        <nav aria-label="Page navigation" id="mongodb-pagination"></nav>
+    </div>
+</div>
+
+<script>
+    async function seedData(database) {
+        const numberOfRecords = document.getElementById("numberOfRecords").value;
+
+        const response = await fetch(`http://localhost:8080/api/${database}/klassen/seed/${numberOfRecords}`);
+        const data = await response.json();
+
+        if (!Array.isArray(data)) {
+            console.error("Invalid data format:", data);
+            return;
+        }
+
+        let html = '<table class="table table-bordered mt-4">';
+        html += '<thead class="thead-dark"><tr><th>Klasse</th><th>Schülername</th><th>Maturafach</th><th>Note</th></tr></thead>';
+        html += '<tbody>';
+
+        const pageSize = 10;
+        const pageCount = Math.ceil(data.length / pageSize);
+
+        for (let i = 0; i < pageSize && i < data.length; i++) {
+            html += '<tr>';
+            html += '<td>' + data[i].className + '</td>';
+            html += '<td>' + data[i].studentName + '</td>';
+            html += '<td>' + data[i].maturafachName + '</td>';
+            html += '<td>' + data[i].maturafachNote + '</td>';
+            html += '</tr>';
+        }
+
+        html += '</tbody></table>';
+        document.getElementById(`${database}-output`).innerHTML = html;
+
+        // Pagination erstellen
+        createPagination(database, pageCount);
+    }
+
+
+    function createPagination(database, pageCount) {
+        const paginationContainer = document.getElementById(`${database}-pagination`);
+        paginationContainer.innerHTML = '';
+
+        for (let i = 1; i <= pageCount; i++) {
+            const pageLink = document.createElement('a');
+            pageLink.href = '#';
+            pageLink.innerHTML = i;
+            pageLink.addEventListener('click', function () {
+                changePage(database, i);
+            });
+
+            const listItem = document.createElement('li');
+            listItem.classList.add('page-item');
+            listItem.appendChild(pageLink);
+
+            paginationContainer.appendChild(listItem);
+        }
+    }
+
+    async function changePage(database, page) {
+        const numberOfRecords = document.getElementById("numberOfRecords").value;
+        const pageSize = 10;
+
+        const startIndex = (page - 1) * pageSize;
+        const endIndex = startIndex + pageSize;
+
+        const response = await fetch(`http://localhost:8080/api/${database}/klassen/seed/${numberOfRecords}`);
+        const data = await response.json();
+
+        let html = '<table class="table table-bordered mt-4">';
+        html += '<thead class="thead-dark"><tr><th>Klasse</th><th>Schülername</th><th>Maturafach</th><th>Note</th></tr></thead>';
+        html += '<tbody>';
+
+        for (let i = startIndex; i < endIndex && i < data.length; i++) {
+            html += '<tr>';
+            html += '<td>' + data[i].className + '</td>';
+            html += '<td>' + data[i].studentName + '</td>';
+            html += '<td>' + data[i].maturafachName + '</td>';
+            html += '<td>' + data[i].maturafachNote + '</td>';
+            html += '</tr>';
+        }
+
+        html += '</tbody></table>';
+        document.getElementById(`${database}-output`).innerHTML = html;
+    }
+</script>
+<!--<script>-->
+<!--    async function createClass() {-->
+<!--        const className = prompt("Enter class name:");-->
+<!--        if (className) {-->
+<!--            await fetch(`http://localhost:8080/api/mongodb/klassen/create/${className}`, { method: 'POST' });-->
+<!--            alert('Class created successfully!');-->
+<!--        }-->
+<!--    }-->
+
+<!--    async function addStudent() {-->
+<!--        const className = prompt("Enter class name:");-->
+<!--        const studentName = prompt("Enter student name:");-->
+<!--        if (className && studentName) {-->
+<!--            await fetch(`http://localhost:8080/api/mongodb/klassen/${className}/schueler`, {-->
+<!--                method: 'POST',-->
+<!--                headers: { 'Content-Type': 'application/json' },-->
+<!--                body: JSON.stringify({ name: studentName })-->
+<!--            });-->
+<!--            alert('Student added successfully!');-->
+<!--        }-->
+<!--    }-->
+
+<!--    async function addMaturafach() {-->
+<!--        const className = prompt("Enter class name:");-->
+<!--        const studentName = prompt("Enter student name:");-->
+<!--        const maturafachName = prompt("Enter maturafach name:");-->
+<!--        const maturafachNote = prompt("Enter maturafach note:");-->
+
+<!--        if (className && studentName && maturafachName && maturafachNote) {-->
+<!--            await fetch(`http://localhost:8080/api/mongodb/klassen/${className}/schueler/${studentName}/maturafach`, {-->
+<!--                method: 'POST',-->
+<!--                headers: { 'Content-Type': 'application/json' },-->
+<!--                body: JSON.stringify({ fach: maturafachName, note: parseInt(maturafachNote) })-->
+<!--            });-->
+<!--            alert('Maturafach added successfully!');-->
+<!--        }-->
+<!--    }-->
+
+<!--    async function findStudent() {-->
+<!--        const studentName = prompt("Enter student name:");-->
+<!--        if (studentName) {-->
+<!--            const response = await fetch(`http://localhost:8080/api/mongodb/klassen/schueler/${studentName}`);-->
+<!--            const data = await response.json();-->
+<!--            alert(JSON.stringify(data));-->
+<!--        }-->
+<!--    }-->
+
+<!--    async function getAllClasses() {-->
+<!--        const response = await fetch('http://localhost:8080/api/mongodb/klassen');-->
+<!--        const data = await response.json();-->
+<!--        alert(JSON.stringify(data));-->
+<!--    }-->
+
+<!--    async function deleteClass() {-->
+<!--        const className = prompt("Enter class name:");-->
+<!--        if (className) {-->
+<!--            await fetch(`http://localhost:8080/api/mongodb/klassen/${className}`, { method: 'DELETE' });-->
+<!--            alert('Class deleted successfully!');-->
+<!--        }-->
+<!--    }-->
+
+<!--    async function deleteAllClasses() {-->
+<!--        await fetch('http://localhost:8080/api/mongodb/klassen', { method: 'DELETE' });-->
+<!--        alert('All classes deleted successfully!');-->
+<!--    }-->
+<!--</script>-->
+
+
+<!-- Script-Links für Bootstrap und jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

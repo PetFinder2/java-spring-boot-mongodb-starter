@@ -20,6 +20,11 @@ public class SQLMaturafach {
     private String fach;
     private int note;
 
+    @ManyToOne
+    @JoinColumn(name = "schueler_id")
+    private SQLSchueler schueler;
+
+
     public SQLMaturafach() {
         // No-arg constructor
     }
@@ -27,6 +32,10 @@ public class SQLMaturafach {
     public SQLMaturafach(String fach, int note) {
         this.fach = fach;
         this.note = note;
+    }
+
+    public void setSchueler(SQLSchueler schueler) {
+        this.schueler = schueler;
     }
 
     public Long getId() {
